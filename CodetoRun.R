@@ -1,5 +1,5 @@
 
-## Isolated Hypertension and brain volumes UKBB ----
+## HypertensiveBurdenCogBrainUKBB ----
 
 #load up packages
 rm(list = ls())
@@ -30,7 +30,7 @@ library(tidyr)
 library(here)
 
 #where to save data
-saving_directory <- here::here("Github", "IsolatedBP_UKBiobank", "DataOutputs")
+saving_directory <- here::here("Github", "HypertensiveBurdenCogBrainUKBB", "DataOutputs")
 
 ReadInDataAndClean <- TRUE # if already read in data and cleaned it put TRUE if not put false
 
@@ -199,9 +199,9 @@ model_IH_all <- function(
 
 
 
-#source(here("Github","IsolatedBP_UKBiobank", "CleaningData.R"))
+#source(here("Github","HypertensiveBurdenCogBrainUKBB", "CleaningData.R"))
 
-#source(here("Github","IsolatedBP_UKBiobank", "RunStudy.R"))
+#source(here("Github","HypertensiveBurdenCogBrainUKBB", "RunStudy.R"))
 
 
 
