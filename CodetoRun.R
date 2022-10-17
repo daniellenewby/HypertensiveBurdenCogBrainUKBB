@@ -77,7 +77,217 @@ findCases = function( codes_jD, epi_iSiC ) {
 
 # other functions here
 
+model_2L_brain <- function(
+    outcome,
+    exposure,
+    data,
+    brainvol
+){
+  
+  model <- glm(outcome ~ exposure + 
+                 Age_at_assessment +
+                 as.factor(Education) +
+                 as.factor(smoking_status) +
+                 as.factor(Gender)*Age_at_assessment +
+                 as.factor(Gender)*poly(Age_at_assessment, 2) +
+                 as.factor(UKBB_centre) +
+                 BMI +
+                 as.factor(Ethnicity) +
+                 as.factor(diabetes) +
+                 as.factor(high_chol) +
+                 f.25000_Volumetric_scaling_T1_head_space +
+                 
+                 `25756-2_ScannerXposition`      +                    
+                 `25757-2.ScannerYposition`            +               
+                 `25758-2_ScannerZposition`     +                      
+                 `25759-2_Scannerposition` ,
+               
+               data = data , family = gaussian
+  )
+  
+  model1 <- summary(model)$coefficients
+  model1_confint <- na.omit(confint(model))
+  model1 <- cbind(model1, model1_confint)
+  model1 <- as.data.frame(model1)
+  
+  ## add in FDR correction
+  model1$`Pr(>|t|)` <- p.adjust(model1$`Pr(>|t|)`, method = "fdr", n = nrow(model1) )
+  model1$n <- rep(nobs(model), nrow(model1))
+  model1$`t value` <- NULL
+  model1$`Std. Error` <- NULL
+  model1 <- model1[2,]
+  
+  model1$Description <- c(paste(brainvol, " (n = ",model1$n[1],")", sep = "")
+  )
+  
+  model1 <- model1[,c(6,1,3,4,2)]
+  
+  rownames(model1) <- NULL
+  
+  return(model1)
+  
+}
 
+
+model_2L_brain_interaction <- function(
+    outcome,
+    exposure,
+    data,
+    brainvol
+){
+  
+  model <- glm(outcome ~ exposure*Age_at_assessment + 
+                 as.factor(Education) +
+                 as.factor(smoking_status) +
+                 as.factor(Gender)*Age_at_assessment +
+                 as.factor(Gender)*poly(Age_at_assessment, 2) +
+                 as.factor(UKBB_centre) +
+                 BMI +
+                 as.factor(Ethnicity) +
+                 as.factor(diabetes) +
+                 as.factor(high_chol) +
+                 f.25000_Volumetric_scaling_T1_head_space +
+                 
+                 `25756-2_ScannerXposition`      +                    
+                 `25757-2.ScannerYposition`            +               
+                 `25758-2_ScannerZposition`     +                      
+                 `25759-2_Scannerposition` ,
+               
+               data = data , family = gaussian
+  )
+  
+  model1 <- summary(model)$coefficients
+  model1_confint <- na.omit(confint(model))
+  model1 <- cbind(model1, model1_confint)
+  model1 <- as.data.frame(model1)
+  
+  ## add in FDR correction
+  model1$`Pr(>|t|)` <- p.adjust(model1$`Pr(>|t|)`, method = "fdr", n = nrow(model1) )
+  model1$n <- rep(nobs(model), nrow(model1))
+  model1$`t value` <- NULL
+  model1$`Std. Error` <- NULL
+  model1 <- model1[c(2,19),]
+  
+  model1$Description <- c(paste(brainvol, " : Main Effect (n = ",model1$n[1],")", sep = ""), paste(brainvol, " : Age Interaction" , sep = "")
+  )
+  
+  model1 <- model1[,c(6,1,3,4,2)]
+  
+  rownames(model1) <- NULL
+  
+  return(model1)
+  
+}
+
+
+model_3L_brain <- function(
+    outcome,
+    exposure,
+    exposurelevels,
+    data,
+    brainvol
+){
+  
+  model <- glm(outcome ~ exposure + 
+                 Age_at_assessment +
+                 as.factor(Education) +
+                 as.factor(smoking_status) +
+                 as.factor(Gender)*Age_at_assessment +
+                 as.factor(Gender)*poly(Age_at_assessment, 2) +
+                 as.factor(UKBB_centre) +
+                 BMI +
+                 as.factor(Ethnicity) +
+                 as.factor(diabetes) +
+                 as.factor(high_chol) +
+                 f.25000_Volumetric_scaling_T1_head_space +
+                 
+                 `25756-2_ScannerXposition`      +                    
+                 `25757-2.ScannerYposition`            +               
+                 `25758-2_ScannerZposition`     +                      
+                 `25759-2_Scannerposition` ,
+               
+               data = data , family = gaussian
+  )
+  
+  model1 <- summary(model)$coefficients
+  model1_confint <- na.omit(confint(model))
+  model1 <- cbind(model1, model1_confint)
+  model1 <- as.data.frame(model1)
+  
+  ## add in FDR correction
+  model1$`Pr(>|t|)` <- p.adjust(model1$`Pr(>|t|)`, method = "fdr", n = nrow(model1) )
+  model1$n <- rep(nobs(model), nrow(model1))
+  model1$`t value` <- NULL
+  model1$`Std. Error` <- NULL
+  model1 <- model1[2:3,]
+  model1[3,] <- c(NA, NA, NA, NA, model1$n[2])
+  
+  model1$Description <- c(exposurelevels, paste(brainvol, " (n =",model1$n[1],")", sep = "")
+  )
+  
+  model1 <- model1[c(3,1,2),]
+  model1 <- model1[,c(6,1,3,4,2)]
+  
+  rownames(model1) <- NULL
+  
+  return(model1)
+  
+}
+
+
+model_5L_brain <- function(
+    outcome,
+    exposure,
+    exposurelevels,
+    data,
+    brainvol
+){
+  
+  model <- glm(outcome ~ exposure + 
+                 Age_at_assessment +
+                 as.factor(Education) +
+                 as.factor(smoking_status) +
+                 as.factor(Gender)*Age_at_assessment +
+                 as.factor(Gender)*poly(Age_at_assessment, 2) +
+                 as.factor(UKBB_centre) +
+                 BMI +
+                 as.factor(Ethnicity) +
+                 as.factor(diabetes) +
+                 as.factor(high_chol) +
+                 f.25000_Volumetric_scaling_T1_head_space +
+                 
+                 `25756-2_ScannerXposition`      +                    
+                 `25757-2.ScannerYposition`            +               
+                 `25758-2_ScannerZposition`     +                      
+                 `25759-2_Scannerposition` ,
+               
+               data = data , family = gaussian
+  )
+  
+  model1 <- summary(model)$coefficients
+  model1_confint <- na.omit(confint(model))
+  model1 <- cbind(model1, model1_confint)
+  model1 <- as.data.frame(model1)
+  
+  ## add in FDR correction
+  model1$`Pr(>|t|)` <- p.adjust(model1$`Pr(>|t|)`, method = "fdr", n = nrow(model1) )
+  model1$n <- rep(nobs(model), nrow(model1))
+  model1$`t value` <- NULL
+  model1$`Std. Error` <- NULL
+  model1 <- model1[2:5,]
+  model1[5,] <- c(NA, NA, NA, NA, model1$n[2])
+  
+  model1$Description <- c(exposurelevels, paste(brainvol, " (n =",model1$n[1],")", sep = "")
+  )
+  
+  model1 <- model1[c(5,1,2,3,4),]
+  model1 <- model1[,c(6,1,3,4,2)]
+  
+  rownames(model1) <- NULL
+  
+  return(model1)
+  
+}
 
 
 
